@@ -4,16 +4,19 @@
         <h3><%= listing.title %></h3>
     </div>
     <div class="card col-6 offset-3 show-card listing-card">
-    <img src="<%= listing.image.url %>" class="card-img-top show-img" alt="Listing_image">
+    <img src="<%= listing.image && listing.image.url ? listing.image.url : '' %>" class="card-img-top show-img" alt="Listing_image">
         <div class="card-body">
+            <% if (listing.owner) { %>
             <p class="card-text"><b>Owned by <i><%= listing.owner.username %></i></b></p>
+            <% } %>
             <p class="card-text"><%= listing.description %></p>
             <p class="card-text"><i class="fa-solid fa-location-dot"></i><%= listing.location %>, <%= listing.country %></p>
             <p class="card-text">&#8377;<%= listing.price.toLocaleString("en-IN") %><i> &nbsp; +18% GST</i></p>
         </div>
     </div>
 
-    <% if(currUser && currUser._id.equals(listing.owner._id)) { %>
+    <% const isOwner = currUser && listing.owner && String(currUser._id) === String(listing.owner._id); %>
+    <% if(isOwner) { %>
     <div class="btns">
         <a href="/listings/<%= listing._id %>/edit" class="btn btn-dark col-1 offset-3 edit-btn mb-3">Edit</a>
 
@@ -57,7 +60,7 @@
             <% for(review of listing.reviews) { %>
             <div class="card col-5 ms-3 mb-3">
                 <div class="card-body">
-                    <h5 class="card-title mt-1">@<%= review.author.username %></h5>
+                    <h5 class="card-title mt-1">@<%= review.author ? review.author.username : 'deleted-user' %></h5>
                     <p class="starability-result card-text" data-rating="<%= review.rating %>"></p>
                     <p class="card-text"><%= review.comment %></p>
                     <% if(currUser) {%>
